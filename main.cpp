@@ -1,99 +1,69 @@
+#include <cstdlib> // getenv
+#include <filesystem>
 #include <iostream>
-#include <string>
-#include <bits/stdc++.h>
 #include <sstream>
+#include <string>
+#include <unistd.h>
+#include <vector>
+
 using namespace std;
-
-class Node
+namespace fs = filesystem;
+vector<string> split(const string &s, char delim)
 {
 
-public:
-    string name;
+    vector<string> result;
+    stringstream ss(s);
 
-    Node(string name)
+    string item;
+
+    while (getline(ss, item, delim))
     {
-        this->name = name;
-    }
-
-    virtual void info() = 0;
-};
-
-class File : public Node
-{
-public:
-    int size;
-
-    File(string name, int size) : Node(name)
-    {
-        this->size = size;
-    }
-
-    void info() override
-    {
-        cout << name << " (" << size << " bytes)" << endl;
-    }
-};
-
-class Folder : public Node
-{
-public:
-    map<string, Node *> children;
-
-    Folder(string name) : Node(name) {}
-
-    void add(Node *node)
-    {
-        children[node->name] = node;
-    }
-
-    void info() override
-    {
-        cout << "Folder: " << name << endl;
-    }
-
-    void list()
-    {
-        for (auto &item : children)
+        if (!item.empty())
         {
-            item.second->info();
+            result.push_back(item);
         }
     }
-};
 
-class FileSystem
-{
-public:
-    Folder *root;
-    Folder *current;
-
-    FileSystem()
-    {
-        root = new Folder("root");
-        current = root;
-    }
-
-    void createFile(string name, int size)
-    {
-        current->add(new File(name, size));
-    }
-
-    void createFolder(string name)
-    {
-        current->add(new Folder(name));
-    }
-
-    void ls()
-    {
-        current->list();
-    }
-};
+    return result;
+}
 
 int main()
 {
 
-    FileSystem fs;
+    string command;
+    while (true)
+    {
 
-    fs.createFile("Hi.txt", 100);
-    fs.createFolder("docs");
-    fs.ls();
+        while (true)
+        {
+
+            cout << "$";
+            ;
+            getline(cin, command);
+
+            if (command.substr(0, 4) == "echo")
+            {
+                cout << command.substr(5) << endl;
+            }
+
+            if (command.substr(0, 4) == "exit")
+            {
+                break;
+            }
+
+            if (command.substr(0, 4) == "type")
+            {
+                string cmd = command.size() > 5 ? command.substr(5) : "";
+
+                if (cmd == "echo" || cmd == "exit" || cmd == "type")
+                {
+                    cout << cmd << "is a builtin function" << endl;
+                }
+            }
+            else
+            {
+                cout << cmd << " is not a builtin function ";
+            }
+        }
+    }
 }
